@@ -9,21 +9,17 @@ router.get('/', async function(req, res, next) {
   // Get auth code
   const code = req.query.code;
 
-  // If code is present, use it
-  if (code) {
-    let token;
-
-    try {
-      token = await authHelper.getTokenFromCode(code, res);
-    } catch (error) {
-      res.json({ title: 'Error', message: 'Error exchanging code for token', error: error });
-    }
-
-    // Redirect to home
-    res.redirect('/');
-  } else {
-    // Otherwise complain
+  // If there is no code, send error
+  if (!code) {
     res.json({ title: 'Error', message: 'Authorization error', error: { status: 'Missing code parameter' } });
+  }
+
+  // There is a code, so attempt to exchange it for a token
+  try {
+    let token = await authHelper.getTokenFromCode(code, res);
+    res.redirect('/');
+  } catch (error) {
+    res.json({ title: 'Error', message: 'Error exchanging code for token', error: error });
   }
 });
 
