@@ -12,6 +12,8 @@ router.get('/', async function(req, res, next) {
   // If there is no code, send error
   if (!code) {
     res.json({ title: 'Error', message: 'Authorization error', error: { status: 'Missing code parameter' } });
+    // Use to prevent code below from running
+    return next();
   }
 
   // There is a code, so attempt to exchange it for a token
