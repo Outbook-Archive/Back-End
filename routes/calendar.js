@@ -46,7 +46,6 @@ router.get('/', async function(req, res, next) {
       .get();
 
     params.events = result.value;
-
     // Convert the times from
     for (let event_index = 0; event_index < params.events.length; event_index++) {
       params.events[event_index].start.dateTime = new Date(params.events[event_index].start.dateTime).getTime() / 1000
