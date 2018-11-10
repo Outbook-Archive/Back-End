@@ -5,7 +5,8 @@ require('dotenv').config();
 
 // Import the routes
 const index = require('./routes/index');
-var authorize = require('./routes/authorize');
+const authorize = require('./routes/authorize');
+const calendar = require('./routes/calendar');
 
 const app = express();
 const port = process.env.PORT;
@@ -22,6 +23,7 @@ app.use(cookieParser());
 // Tell app to use the routes
 app.use('/', index);
 app.use('/authorize', authorize);
+app.use('/calendar', calendar);
 
 app.listen(port, () => {
     console.log(`Listening on server port: ${port}`);

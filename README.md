@@ -18,3 +18,8 @@ For those on the outbook.us team, feel free to get the .env credentials from Ans
    6. Click the "Save" button.
    7. Copy and paste the Application Id next to "APP_ID=" in your .env file.
 5. You can now run the app by going to this app's directory and running ```npm install && npm start``` in your command line.
+
+## Routes that are available:
+- ```/``` - Returns the URL to login to Outlook. You can go to the URL to login and then get redirected back to the app.
+- ```/authorize/signout``` - Removes all the cookies associated with the signed in account.
+- ```/calendar``` - Returns the upcoming calendar events. You can change how many events (```numberOfEvents```) and how many days to look ahead for events (```daysIntoFuture```) in ```routes/calendar.js```

@@ -45,6 +45,7 @@ router.get('/', async function(req, res, next) {
       .get();
 
     params.events = result.value;
+<<<<<<< HEAD
     for (let event_index = 0; event_index < params.events.length; event_index++) {
       params.events[event_index].start.dateTime = new Date(params.events[event_index].start.dateTime).getTime() / 1000
       params.events[event_index].start.timeZone = 'Unix Timestamp'
@@ -52,6 +53,8 @@ router.get('/', async function(req, res, next) {
       params.events[event_index].end.timeZone = 'Unix Timestamp'
     }
 
+=======
+>>>>>>> 05eef81901fd374e9cf4fba3e96428f48d8e1fe2
     res.json(params)
   } catch (err) {
     params.message = 'Error retrieving events';
