@@ -44,13 +44,41 @@ router.get('/', async function(req, res, next) {
       .orderby('start/dateTime ASC')
       .get();
 
+    // Dirty test code starts here
+    const event = {
+      subject: "Appointment Made",
+        start: {
+          dateTime: "2018-11-12T18:30:00.0000000",
+          timeZone: "UTC"
+        },
+        end: {
+          dateTime: "2018-11-12T19:00:00.0000000",
+          timeZone: "UTC"
+        },
+        attendees: [
+          {
+            "EmailAddress": {
+              "Address": "iamansel@gmail.com",
+              "Name": "Ansel Bridgewater"
+            },
+            "Type": "Required"
+          }
+        ]
+      }
+
+      const testAdd = await client
+        .api("/me/events")
+        .post(event);
+
+    // Dirty test code ends here
     params.events = result.value;
-    for (let event_index = 0; event_index < params.events.length; event_index++) {
-      params.events[event_index].start.dateTime = new Date(params.events[event_index].start.dateTime).getTime() / 1000
-      params.events[event_index].start.timeZone = 'Unix Timestamp'
-      params.events[event_index].end.dateTime = new Date(params.events[event_index].end.dateTime).getTime() / 1000
-      params.events[event_index].end.timeZone = 'Unix Timestamp'
-    }
+    // Unix timestamp not needed?
+    // for (let event_index = 0; event_index < params.events.length; event_index++) {
+    //   params.events[event_index].start.dateTime = new Date(params.events[event_index].start.dateTime).getTime() / 1000
+    //   params.events[event_index].start.timeZone = 'Unix Timestamp'
+    //   params.events[event_index].end.dateTime = new Date(params.events[event_index].end.dateTime).getTime() / 1000
+    //   params.events[event_index].end.timeZone = 'Unix Timestamp'
+    // }
 
     res.json(params)
   } catch (err) {
@@ -60,5 +88,37 @@ router.get('/', async function(req, res, next) {
     res.json(params);
   }
 });
+
+router.post('/', (req, res) => {
+  const event = {
+    subject: "Appointment Made",
+      start: {
+        dateTime: "2018-11-12T18:30:00.0000000",
+        timeZone: "UTC"
+      },
+      end: {
+        dateTime: "2018-11-12T19:00:00.0000000",
+        timeZone: "UTC"
+      },
+      attendees: [
+        {
+          "EmailAddress": {
+            "Address": "iamansel@gmail.com",
+            "Name": "Ansel Bridgewater"
+          },
+          "Type": "Required"
+        }
+      ]
+    }
+
+    // const testAdd = await client
+    //   .api("/me/events")
+    //   .post({ event }, (err, res) => {
+    //     if (err) throw err;
+    //
+    //       console.log(res)
+    //   })
+
+})
 
 module.exports = router;
