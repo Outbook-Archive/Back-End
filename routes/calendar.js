@@ -39,7 +39,6 @@ router.get('/', async function(req, res, next) {
     // Get the first [numberOfEvents] events for the coming week
     const result = await client
       .api(`/me/calendarView?startDateTime=${start.toISOString()}&endDateTime=${end.toISOString()}`)
-      // .headers({ "Prefer": 'outlook.timezone="Pacific Standard Time"' })
       .top(numberOfEvents)
       .select('subject,start,end,attendees')
       .orderby('start/dateTime ASC')
