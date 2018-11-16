@@ -27,6 +27,8 @@ router.get('/', async function(req, res, next) {
   const daysIntoFuture = 7
   // Number of calendar events to return
   const numberOfEvents = 10
+  // Query specific subjects
+  const subject = "Appointment"
 
   // Set start of the calendar view to today at midnight
   const start = new Date(new Date().setHours(0,0,0));
@@ -39,6 +41,7 @@ router.get('/', async function(req, res, next) {
     // Get the first [numberOfEvents] events for the coming week
     const result = await client
       .api(`/me/calendarView?startDateTime=${start.toISOString()}&endDateTime=${end.toISOString()}`)
+      .filter(`startswith(Subject, '${subject}')`)
       .top(numberOfEvents)
       .select('subject,start,end,attendees')
       .orderby('start/dateTime ASC')
