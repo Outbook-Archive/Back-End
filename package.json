@@ -5,14 +5,15 @@
   "main": "server.js",
   "scripts": {
     "start": "node server.js",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "mocha test/*_test.js",
+    "test-watch": "nodemon --exec 'npm test'"
   },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/SF-Gov/Back-End.git"
   },
   "keywords": [],
-  "author": "",
+  "author": "Jayce Azua && Ansel Bridgewater",
   "license": "ISC",
   "bugs": {
     "url": "https://github.com/SF-Gov/Back-End/issues"

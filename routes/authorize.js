@@ -5,7 +5,7 @@ var authHelper = require('../helpers/auth');
 
 // Get authroize route
 // Handles returned authentication code from Microsoft's OAuth2 login
-router.get('/authorize/', async function(req, res, next) {
+router.get('/authorize', async function(req, res, next) {
   // Get auth code
   const code = req.query.code;
 
