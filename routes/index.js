@@ -5,21 +5,24 @@ const { getAuthUrl, getAccessToken } = require('../helpers/auth');
 
 // Get homepage for OAuth2 login
 router.get('/', async function(req, res, next) {
-  let params = {}
+    //
+    let params = {}
 
-  //TODO: Prevent accessToken from getting sent to front end before shipping final version
-  const accessToken = await getAccessToken(req.cookies, res);
-  const userName = req.cookies.graph_user_name;
+    // TODO: We need to send some sort of JSON to the frontend to be able to auth with a button
+    
+    // TODO: Prevent accessToken from getting sent to front end before shipping final version
+    const accessToken = await getAccessToken(req.cookies, res);
+    const userName = req.cookies.graph_user_name;
 
-  if (accessToken && userName) {
-    params.user = userName;
-    params.debug = `User: ${userName}\nAccess Token: ${accessToken}`;
-  } else {
-    params.signInUrl = getAuthUrl();
-    params.debug = params.signInUrl;
-  }
+    if (accessToken && userName) {
+        params.user = userName;
+        params.debug = `User: ${userName}\nAccess Token: ${accessToken}`;
+    } else {
+        params.signInUrl = getAuthUrl();
+        params.debug = params.signInUrl;
+    }
 
-  res.json(params)
+    res.json(params)
 })
 
 module.exports = router;
