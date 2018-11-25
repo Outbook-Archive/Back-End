@@ -1,21 +1,18 @@
+require('dotenv').config();
 const express = require('express');
 const cookieParser = require('cookie-parser');
-
-require('dotenv').config();
-
-// Import the routes
-const index = require('./routes/index');
-const authorize = require('./routes/authorize');
-const calendar = require('./routes/calendar');
-
 const app = express();
-const port = process.env.PORT;
+const port = process.env.PORT || 3000;
 
-// TODO: Future db connection
+// dbConnection
+require('./dbConnection/mongo');
 
 // Body Parser
-app.use(express.json());
-app.use(express.urlencoded({ extended: false }));
+// MIDDLEWARE
+app.use(bodyParser.json());
+app.use(bodyParser.urlencoded({
+    extended: false
+}));
 
 // Cookie Parser
 app.use(cookieParser());
@@ -27,10 +24,15 @@ app.use(function(req, res, next) {
   next();
 });
 
+
+// Import the routes
+const index = require('./routes/index');
+const authorize = require('./routes/authorize');
+const calendar = require('./routes/calendar');
 // Tell app to use the routes
-app.use('/', index);
-app.use('/authorize', authorize);
-app.use('/calendar', calendar);
+app.use(index);
+app.use(authorize);
+app.use(calendar);
 
 app.listen(port, () => {
     console.log(`Listening on server port: ${port}`);

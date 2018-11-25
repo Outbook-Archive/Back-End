@@ -5,7 +5,7 @@ var authHelper = require('../helpers/auth');
 
 // Get authroize route
 // Handles returned authentication code from Microsoft's OAuth2 login
-router.get('/', async function(req, res, next) {
+router.get('/authorize/', async function(req, res, next) {
   // Get auth code
   const code = req.query.code;
 
@@ -26,7 +26,7 @@ router.get('/', async function(req, res, next) {
 });
 
 // Signs the user out by clearing cookies
-router.get('/signout', function(req, res, next) {
+router.get('/authorize/signout', function(req, res, next) {
   authHelper.clearCookies(res);
 
   // Redirect to home
