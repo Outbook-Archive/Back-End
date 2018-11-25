@@ -1,12 +1,12 @@
 // Copyright (c) Microsoft. All rights reserved. Licensed under the MIT license. See LICENSE.txt in the project root for license information.
-var express = require('express');
-var router = express.Router();
-var authHelper = require('../helpers/auth');
-var graph = require('@microsoft/microsoft-graph-client');
+const express = require('express');
+const router = express.Router();
+const { getAccessToken } = require('../helpers/auth');
+const graph = require('@microsoft/microsoft-graph-client');
 
 // Get calendar events
 router.get('/calendar', async function(req, res, next) {
-  const accessToken = await authHelper.getAccessToken(req.cookies, res);
+  const accessToken = await getAccessToken(req.cookies, res);
   const userName = req.cookies.graph_user_name;
 
   // If accessToken and/or userName is not avaiable, redirect to home

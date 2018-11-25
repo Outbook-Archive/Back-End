@@ -94,7 +94,15 @@ function clearCookies(res) {
   res.clearCookie('graph_token_expires', {maxAge: 3600000, httpOnly: true});
 }
 
-exports.getAuthUrl = getAuthUrl;
-exports.getTokenFromCode = getTokenFromCode;
-exports.getAccessToken = getAccessToken;
-exports.clearCookies = clearCookies;
+
+module.exports = { // consider using this
+    getAuthUrl,
+    getTokenFromCode,
+    getAccessToken,
+    clearCookies
+}
+
+// exports.getAuthUrl = getAuthUrl;
+// exports.getTokenFromCode = getTokenFromCode;
+// exports.getAccessToken = getAccessToken;
+// exports.clearCookies = clearCookies;
