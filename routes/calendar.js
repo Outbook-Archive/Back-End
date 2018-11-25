@@ -5,7 +5,7 @@ var authHelper = require('../helpers/auth');
 var graph = require('@microsoft/microsoft-graph-client');
 
 // Get calendar events
-router.get('/calendar/', async function(req, res, next) {
+router.get('/calendar', async function(req, res, next) {
   const accessToken = await authHelper.getAccessToken(req.cookies, res);
   const userName = req.cookies.graph_user_name;
 
@@ -92,7 +92,7 @@ router.get('/calendar/', async function(req, res, next) {
   }
 });
 
-router.post('/calendar/', (req, res) => {
+router.post('/calendar', (req, res) => {
   const event = {
     subject: "Appointment Made",
       start: {
