@@ -60,8 +60,7 @@ async function getAccessToken(cookies, res) {
     }
   }
 
-  // Either no token or it's expired, do we have a
-  // refresh token?
+  // Either no token or it's expired, do we have a refresh token?
   const refresh_token = cookies.graph_refresh_token;
   if (refresh_token) {
     const newToken = await oauth2.accessToken.create({refresh_token: refresh_token}).refresh();
@@ -73,7 +72,7 @@ async function getAccessToken(cookies, res) {
   return null;
 }
 
-function saveValuesToCookie(token, res) {
+function saveValuesToCookie(token, res) { // consider having the cookies expire every 6 months
   // Parse the identity token
   const user = jwt.decode(token.token.id_token);
 
@@ -94,7 +93,10 @@ function clearCookies(res) {
   res.clearCookie('graph_token_expires', {maxAge: 3600000, httpOnly: true});
 }
 
-exports.getAuthUrl = getAuthUrl;
-exports.getTokenFromCode = getTokenFromCode;
-exports.getAccessToken = getAccessToken;
-exports.clearCookies = clearCookies;
+
+module.exports = {
+    getAuthUrl,
+    getTokenFromCode,
+    getAccessToken,
+    clearCookies
+}
