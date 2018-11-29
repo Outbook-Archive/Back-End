@@ -19,7 +19,7 @@ router.get('/authorize', async function(req, res, next) {
   // There is a code, so attempt to exchange it for a token
   try {
     let token = await getTokenFromCode(code, res);
-    res.redirect('/');
+    res.redirect('/'); // <- this might be your bug for it not allowing it to redirect.
   } catch (error) {
     res.json({ title: 'Error', message: 'Error exchanging code for token', error: error });
   }
