@@ -36,11 +36,11 @@ async function getTokenFromCode(auth_code, res) {
   });
 
   const token = oauth2.accessToken.create(result);
-  console.log('Token created: ', token.token);
+  console.log('Token created: ', token.token); // <-- important
 
   saveValuesToCookie(token, res);
 
-  return token.token.access_token;
+  return token.token;
 }
 
 // Gets or refreshes token used for accessing calendar data
@@ -71,7 +71,7 @@ async function getAccessToken(cookies, res) {
   // Nothing in the cookies that helps, return empty
   return null;
 }
-
+ 
 function saveValuesToCookie(token, res) { // consider having the cookies expire every 6 months
   // Parse the identity token
   const user = jwt.decode(token.token.id_token);
