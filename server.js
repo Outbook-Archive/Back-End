@@ -6,7 +6,7 @@ const app = express();
 const port = process.env.PORT || 3000;
 
 // dbConnection
-require('./dbConnection/sql');
+require('./dbConnection/mongo');
 
 // Body Parser
 app.use(bodyParser.json());
