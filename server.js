@@ -6,10 +6,9 @@ const app = express();
 const port = process.env.PORT || 3000;
 
 // dbConnection
-require('./dbConnection/mongo');
+require('./dbConnection/sql');
 
 // Body Parser
-// MIDDLEWARE
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
 
