@@ -9,8 +9,8 @@ const port = process.env.PORT || 3000;
 require('./dbConnection/mongo');
 
 // Body Parser
-app.use(bodyParser.json());
-app.use(bodyParser.urlencoded({ extended: false }));
+app.use(exoress.json());
+app.use(express.urlencoded({ extended: false }));
 
 // Cookie Parser
 app.use(cookieParser());
