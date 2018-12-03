@@ -1,17 +1,11 @@
+require('dotenv').config();
 const express = require('express');
 const cookieParser = require('cookie-parser');
-
-require('dotenv').config();
-
-// Import the routes
-const index = require('./routes/index');
-const authorize = require('./routes/authorize');
-const calendar = require('./routes/calendar');
-
 const app = express();
-const port = process.env.PORT;
+const port = process.env.PORT || 3000;
 
-// TODO: Future db connection
+// dbConnection
+require('./dbConnection/mongo');
 
 // Body Parser
 app.use(express.json());
@@ -21,19 +15,25 @@ app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
 
 // Disables CORS
-app.use(function(req, res, next) {
+app.use((req, res, next) => {
   res.header("Access-Control-Allow-Origin", "*");
   res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
   next();
 });
 
+
+// Import the routes
+const index = require('./routes/index');
+const authorize = require('./routes/authorize');
+const calendar = require('./routes/calendar');
 // Tell app to use the routes
-app.use('/', index);
-app.use('/authorize', authorize);
-app.use('/calendar', calendar);
+app.use(index);
+app.use(authorize);
+app.use(calendar);
 
 app.listen(port, () => {
     console.log(`Listening on server port: ${port}`);
 });
 
-// module.exports = app;
+// This is for testing purposes
+module.exports = { app };
