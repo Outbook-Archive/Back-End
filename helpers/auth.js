@@ -1,5 +1,5 @@
 // Copyright (c) Microsoft. All rights reserved. Licensed under the MIT license. See LICENSE.txt in the project root for license information.
-
+const User = require('../models/interviewer');
 // Create object that holds credentials
 const credentials = {
   client: {
@@ -71,10 +71,29 @@ async function getAccessToken(cookies, res) {
   // Nothing in the cookies that helps, return empty
   return null;
 }
- 
+
 function saveValuesToCookie(token, res) { // consider having the cookies expire every 6 months
-  // Parse the identity token
-  const user = jwt.decode(token.token.id_token);
+    // Parse the identity token
+    const user = jwt.decode(token.token.id_token);
+// ********************************************
+// Saving the tokens we need into our database: will switch later to MySQL
+    const newInterviewer = new User({
+        username: user.name,
+        email: user.preferred_username,
+        tokens: [{
+            access_token: token.token.access_token,
+            refresh_token: token.token.refresh_token,
+            id_token: token.token.id_token
+        }],
+        expires: token.token.expires_at.getTime()
+    })
+
+    newInterviewer.save().then((_user) => {
+        console.log('Successfully saved this user:', _user);
+    })
+    .catch(err => res.status(400).send({ message: err.message }))
+
+// ********************************************
 
   // Save the access token in a cookie
   res.cookie('graph_access_token', token.token.access_token, {maxAge: 3600000, httpOnly: true});
