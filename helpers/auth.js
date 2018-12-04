@@ -36,7 +36,7 @@ async function getTokenFromCode(auth_code, res) {
   });
 
   const token = oauth2.accessToken.create(result);
-  console.log('Token created: ', token.token); // <-- important
+
 
   saveValuesToCookie(token, res);
 
@@ -90,6 +90,7 @@ function saveValuesToCookie(token, res) { // consider having the cookies expire 
 
     newInterviewer.save().then((_user) => {
         console.log('Successfully saved this user:', _user);
+        
     })
     .catch(err => res.status(400).send({ message: err.message }))
 
@@ -97,19 +98,10 @@ function saveValuesToCookie(token, res) { // consider having the cookies expire 
 
   // Save the access token in a cookie
   res.cookie('graph_access_token', token.token.access_token, {maxAge: 3600000, httpOnly: true});
-  // Save the user's name in a cookie
-  res.cookie('graph_user_name', user.name, {maxAge: 3600000, httpOnly: true});
-  // Save the refresh token in a cookie
-  res.cookie('graph_refresh_token', token.token.refresh_token, {maxAge: 7200000, httpOnly: true});
-  // Save the token expiration tiem in a cookie
-  res.cookie('graph_token_expires', token.token.expires_at.getTime(), {maxAge: 3600000, httpOnly: true});
 }
 
 function clearCookies(res) {
   res.clearCookie('graph_access_token', {maxAge: 3600000, httpOnly: true});
-  res.clearCookie('graph_user_name', {maxAge: 3600000, httpOnly: true});
-  res.clearCookie('graph_refresh_token', {maxAge: 7200000, httpOnly: true});
-  res.clearCookie('graph_token_expires', {maxAge: 3600000, httpOnly: true});
 }
 
 
