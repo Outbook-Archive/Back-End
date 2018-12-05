@@ -1,25 +1,40 @@
 // Copyright (c) Microsoft. All rights reserved. Licensed under the MIT license. See LICENSE.txt in the project root for license information.
-var express = require('express');
-var router = express.Router();
-var authHelper = require('../helpers/auth');
+const express = require('express');
+const router = express.Router();
+const { getAuthUrl, getAccessToken } = require('../helpers/auth');
 
 // Get homepage for OAuth2 login
 router.get('/', async function(req, res, next) {
-  let params = {}
+    /* TODO:
+        we need to write a if...else here that if they are authenticated it shows them their "Dashboard"
+        if they aren't display the code below....
+    */
 
-  //TODO: Prevent accessToken from getting sent to front end before shipping final version
-  const accessToken = await authHelper.getAccessToken(req.cookies, res);
-  const userName = req.cookies.graph_user_name;
 
-  if (accessToken && userName) {
-    params.user = userName;
-    params.debug = `User: ${userName}\nAccess Token: ${accessToken}`;
-  } else {
-    params.signInUrl = authHelper.getAuthUrl();
-    params.debug = params.signInUrl;
-  }
 
-  res.json(params)
+    let params = {} // what we are going to send to the frontend
+
+
+    // TODO: Prevent accessToken from getting sent to front end before shipping final version
+    const accessToken = await getAccessToken(req.cookies, res);
+    const userName = req.cookies.graph_user_name;
+
+    if (accessToken && userName) {
+        params.user = userName;
+        params.debug = `User: ${userName}\nAccess Token: ${accessToken}`;
+    } else {
+        params.signInUrl = getAuthUrl();
+
+        // params.debug = params.signInUrl; // <-- redundant
+    }
+
+    res.json(params)
+    // TODO: We need to send some sort of JSON to the frontend to be able to auth with a button
+    /*
+        The JSON that needs to be sent to the frontend is from the object the key:value of -> "signInUrl"
+        res.json(params.signInUrl) < only one we need to send and they will be able to get that and attach that route
+        to a button....
+    */
 })
 
 module.exports = router;

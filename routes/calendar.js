@@ -6,8 +6,8 @@ var graph = require('@microsoft/microsoft-graph-client');
 var moment = require('moment');
 
 // Get calendar events
-router.get('/', async function(req, res, next) {
-  const accessToken = await authHelper.getAccessToken(req.cookies, res);
+router.get('/calendar', async function(req, res, next) {
+  const accessToken = await getAccessToken(req.cookies, res);
   const userName = req.cookies.graph_user_name;
 
   // If accessToken and/or userName is not avaiable, redirect to home
@@ -29,7 +29,7 @@ router.get('/', async function(req, res, next) {
   // Number of calendar events to return
   const numberOfEvents = 10
   // Query specific subjects
-  const subject = "Time Block";
+  const subject = "Appointment"
 
   // Set start of the calendar view to today at midnight
   const start = new Date(new Date().setHours(0,0,0));
