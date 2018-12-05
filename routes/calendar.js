@@ -15,6 +15,7 @@ router.get('/calendar/interviewer/:interviewerId', async function(req, res, next
     res.status(400).json({ message: err.message })
   });
 
+  // console.log(interviewer)
   const accessToken = interviewer.tokens[0].access_token;
   const userName = interviewer.username;
   // const accessToken = await getAccessToken(req.cookies, res);
@@ -124,18 +125,11 @@ router.get('/calendar/interviewer/:interviewerId', async function(req, res, next
             console.log(err)
             return;
           }
-            console.log(res)
+            
         })
     })
     // Dirty test code ends here
 
-    // Unix timestamp not needed?
-    // for (let event_index = 0; event_index < params.events.length; event_index++) {
-    //   params.events[event_index].start.dateTime = new Date(params.events[event_index].start.dateTime).getTime() / 1000
-    //   params.events[event_index].start.timeZone = 'Unix Timestamp'
-    //   params.events[event_index].end.dateTime = new Date(params.events[event_index].end.dateTime).getTime() / 1000
-    //   params.events[event_index].end.timeZone = 'Unix Timestamp'
-    // }
 
     res.json(params)
   } catch (err) {
