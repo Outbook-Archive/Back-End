@@ -1,9 +1,9 @@
 const mongoose = require('mongoose');
  // Set a Mongoose Promise Library
 mongoose.Promise = global.Promise;
-// const dbpassword = process.env.DB_PASSWORD; <- for mlab
-// const dbuser = process.env.DB_USER; <- for mlab
-const dbURI = process.env.MONGODB_URI || 'mongodb://localhost:27017/outbooked-demo';
+const dbpassword = process.env.DB_PASSWORD;
+const dbuser = process.env.DB_USER;
+const dbURI = process.env.MONGODB_URI || `mongodb://${dbuser}:${dbpassword}@ds119688.mlab.com:19688/outbooked`;
 mongoose.connect(dbURI, { useNewUrlParser: true });
 mongoose.connection.once('open', () => {
   console.log('Mongo Connected.')

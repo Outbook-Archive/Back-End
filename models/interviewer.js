@@ -4,7 +4,13 @@ const Schema = mongoose.Schema;
 const interviewerSchema = new Schema({
     username: {
         type: String,
-        required: true
+        required: true,
+        unique: true
+    },
+    email: {
+        type: String,
+        required: true,
+        unique: true
     },
     // what are we going to store?
     tokens: [{
@@ -18,9 +24,13 @@ const interviewerSchema = new Schema({
         },
         id_token: {
             type: String,
-            require: true
+            required: true
         }
-    }]
+    }],
+    expires: {
+        type: Date,
+        required: true
+    }
 });
 
 let Interviewer = mongoose.model('Interviewer', interviewerSchema);

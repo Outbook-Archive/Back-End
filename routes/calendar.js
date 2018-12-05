@@ -1,14 +1,24 @@
-// Copyright (c) Microsoft. All rights reserved. Licensed under the MIT license. See LICENSE.txt in the project root for license information.
-var express = require('express');
-var router = express.Router();
-var authHelper = require('../helpers/auth');
-var graph = require('@microsoft/microsoft-graph-client');
-var moment = require('moment');
+const express = require('express');
+const router = express.Router();
+const Interviewer = require('../models/interviewer');
+const { getAccessToken } = require('../helpers/auth');
+const graph = require('@microsoft/microsoft-graph-client');
+const moment = require('moment');
 
 // Get calendar events
-router.get('/calendar', async function(req, res, next) {
-  const accessToken = await getAccessToken(req.cookies, res);
-  const userName = req.cookies.graph_user_name;
+router.get('/calendar/interviewer/:interviewerId', async function(req, res, next) {
+
+  // Get the access token from the database
+  const interviewer = await Interviewer.findById(req.params.interviewerId).then((interviewer) => {
+    return interviewer
+  }).catch((err) => {
+    res.status(400).json({ message: err.message })
+  });
+
+  const accessToken = interviewer.tokens[0].access_token;
+  const userName = interviewer.username;
+  // const accessToken = await getAccessToken(req.cookies, res);
+
 
   // If accessToken and/or userName is not avaiable, redirect to home
   if (!(accessToken && userName)) {
@@ -29,7 +39,7 @@ router.get('/calendar', async function(req, res, next) {
   // Number of calendar events to return
   const numberOfEvents = 10
   // Query specific subjects
-  const subject = "Appointment"
+  const subject =  "Appointment"
 
   // Set start of the calendar view to today at midnight
   const start = new Date(new Date().setHours(0,0,0));

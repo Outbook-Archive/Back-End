@@ -28,10 +28,8 @@ router.get('/authorize', async function(req, res, next) {
 
 
 // Signs the user out by clearing cookies
-router.get('/authorize/signout', function(req, res, next) {
-
+router.get('/authorize/signout', function(req, res) {
   clearCookies(res);
-
   // Redirect to home
   res.redirect('/');
 });
