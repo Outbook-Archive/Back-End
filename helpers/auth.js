@@ -75,6 +75,42 @@ async function getAccessToken(cookies, res) {
 
 
 
+// Function to refresh tokens
+function refreshTokens() {
+  // Get all interviewers and create object with new tokens
+  Interviewer
+    .find({})
+    .then((interviewers) => {
+      interviewers.forEach(async function(interviewer) {
+        const refresh_token = interviewer.tokens[0].refresh_token;
+        const newToken = await oauth2.accessToken.create({refresh_token: refresh_token}).refresh();
+        if (newToken) {
+          const update = {
+            tokens: [{
+              access_token: newToken.token.access_token,
+              refresh_token: newToken.token.refresh_token,
+              id_token: newToken.token.id_token
+            }],
+            expires: newToken.token.expires_at.getTime()
+          }
+          // Update the tokens in the database
+          Interviewer
+            .findByIdAndUpdate(interviewer._id, update)
+            .then((interviewer) => {
+              console.log(`Successfully updated interviewer: ${interviewer.username}`);
+            }).catch((err) => {
+              console.log(err.message)
+            })
+        } else {
+          console.log("refresh_token is not valid");
+        }
+      })
+    }).catch((err) => {
+      console.log(err.message)
+    })
+}
+
+
 
 function saveValuesToCookie(token, res) { // consider having the cookies expire every 6 months
     // Parse the identity token
@@ -114,6 +150,7 @@ function clearCookies(res) {
 module.exports = {
     getAuthUrl,
     getTokenFromCode,
+    refreshTokens,
     getAccessToken,
     clearCookies
 }
