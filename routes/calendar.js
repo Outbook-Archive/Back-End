@@ -1,6 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const Interviewer = require('../models/interviewer');
+const Candidate = require('../models/candidate');
 const { getAccessToken } = require('../helpers/auth');
 const graph = require('@microsoft/microsoft-graph-client');
 const moment = require('moment');
@@ -51,10 +52,20 @@ router.get('/calendar/interviewer/:interviewerId', async function(req, res, next
 
   try {
     // Get the first [numberOfEvents] events for the coming week
+    // const result = await client
+    //   .api(`/me/calendarView?startDateTime=${start.toISOString()}&endDateTime=${end.toISOString()}`)
+    //   .filter(`contains(Subject, '${subject}')`)
+    //   .top(numberOfEvents)
+    //   .select('subject,start,end,attendees')
+    //   .orderby('start/dateTime ASC')
+    //   .get();
+
+    // const test = new DateTime("2018-12-06T16:00:00.0000", new DateTimeZone('UTC'));
+    const test = "2018-12-06T16:00:00.0000"
+    const uri = `/me/events?$filter=start%20eq%20${test}`
+    const res = encodeURI(uri)
     const result = await client
-      .api(`/me/calendarView?startDateTime=${start.toISOString()}&endDateTime=${end.toISOString()}`)
-      .filter(`contains(Subject, '${subject}')`)
-      .top(numberOfEvents)
+      .api(res)
       .select('subject,start,end,attendees')
       .orderby('start/dateTime ASC')
       .get();
@@ -125,7 +136,7 @@ router.get('/calendar/interviewer/:interviewerId', async function(req, res, next
             console.log(err)
             return;
           }
-            
+
         })
     })
     // Dirty test code ends here
@@ -139,5 +150,63 @@ router.get('/calendar/interviewer/:interviewerId', async function(req, res, next
     res.json(params);
   }
 });
+
+router.post('/calendar/interviewer/:interviewerId', async function(req, res, next) {
+  // Create new user
+  const date = new Date(req.body.unixTimestamp * 1000);
+  const newCandidate = new Candidate({
+    fullName: req.body.fullName,
+    email: req.body.email,
+    phoneNumber: req.body.phoneNumber,
+    unixTimestamp: req.body.unixTimestamp,
+    date: date
+  })
+
+  newCandidate
+    .save()
+    .then((candidate) => {
+      console.log('Successfully saved this user:', candidate.fullName);
+    })
+    .catch((err) => {
+      res.status(400).send({ message: err.message })
+    })
+
+  // Get the access token from the database
+  const interviewer = await Interviewer
+    .findById(req.params.interviewerId)
+    .then((interviewer) => {
+      return interviewer
+    }).catch((err) => {
+      res.status(400).json({ message: err.message })
+    });
+
+  const accessToken = interviewer.tokens[0].access_token;
+
+  // Initialize Microsoft Graph client
+  const client = graph.Client.init({
+    authProvider: (done) => {
+      done(null, accessToken);
+    }
+  });
+
+  // Find calendar event
+  try {
+    // Get the first [numberOfEvents] events for the coming week
+    const result = await client
+      .api(`/me/calendarView?startDateTime=${start.toISOString()}&endDateTime=${end.toISOString()}`)
+      .filter(`contains(Subject, '${subject}')`)
+      .select('subject,start,end,attendees')
+      .orderby('start/dateTime ASC')
+      .get();
+
+    res.json(params)
+  } catch (err) {
+    params.message = 'Error retrieving events';
+    params.error = { status: `${err.code}: ${err.message}` };
+    params.debug = JSON.stringify(err.body, null, 2);
+    res.json(params);
+  }
+  // Save to calendar
+})
 
 module.exports = router;
