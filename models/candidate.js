@@ -24,6 +24,11 @@ const candidateSchema = new Schema({
   date: {
     type: Date,
     required: true
+  },
+  eventId: {
+    type: String,
+    required: true,
+    unique: true
   }
 });
 
