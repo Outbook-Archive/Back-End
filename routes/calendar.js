@@ -52,20 +52,10 @@ router.get('/calendar/interviewer/:interviewerId', async function(req, res, next
 
   try {
     // Get the first [numberOfEvents] events for the coming week
-    // const result = await client
-    //   .api(`/me/calendarView?startDateTime=${start.toISOString()}&endDateTime=${end.toISOString()}`)
-    //   .filter(`contains(Subject, '${subject}')`)
-    //   .top(numberOfEvents)
-    //   .select('subject,start,end,attendees')
-    //   .orderby('start/dateTime ASC')
-    //   .get();
-
-    // const test = new DateTime("2018-12-06T16:00:00.0000", new DateTimeZone('UTC'));
-    const test = "2018-12-06T16:00:00.0000"
-    const uri = `/me/events?$filter=start%20eq%20${test}`
-    const res = encodeURI(uri)
     const result = await client
-      .api(res)
+      .api(`/me/calendarView?startDateTime=${start.toISOString()}&endDateTime=${end.toISOString()}`)
+      .filter(`contains(Subject, '${subject}')`)
+      .top(numberOfEvents)
       .select('subject,start,end,attendees')
       .orderby('start/dateTime ASC')
       .get();
@@ -100,44 +90,48 @@ router.get('/calendar/interviewer/:interviewerId', async function(req, res, next
       let duration = endTime.diff(startTime, 'minutes');
       let numOfDividedEvents = Math.floor(duration / 15);
       let newEventsArr = [];
-      for(let i = 0; i < numOfDividedEvents; i++){
-        let thisStartTime;
-        let thisEndTime;
-        if(newEventsArr.length > 0){
-          thisStartTime = moment(newEventsArr[newEventsArr.length-1].end.dateTime);
-          thisEndTime = moment(newEventsArr[newEventsArr.length-1].end.dateTime);
-        }else{
-          thisStartTime = moment(event.start.dateTime).subtract(8, "hours");
-          thisEndTime = moment(event.start.dateTime).subtract(8, "hours");
-        }
-        thisEndTime.add(15, "minutes");
-        newEvent = {
-          subject : "Interview Appointment",
-          start: {
-            dateTime : thisStartTime.utc().format(),
-            timeZone : "UTC"
-          },
-          end : {
-            dateTime : thisEndTime.utc().format(),
-            timeZone : "UTC"
-          },
-          attendees : event.attendees
-        }
-        const testAdd = await client
-          .api("/me/events")
-          .post(newEvent);
-        newEventsArr.push(newEvent);
-      }
-      console.log(newEventsArr);
-      const testDelete = await client
-        .api(`/me/events/${event.id}`)
-        .delete((err, res) => {
-          if (err) {
-            console.log(err)
-            return;
-          }
+      // Only divide events if they are 30 minutes or longer
+      if (numOfDividedEvents > 1) {
 
-        })
+        for(let i = 0; i < numOfDividedEvents; i++){
+          let thisStartTime;
+          let thisEndTime;
+          if(newEventsArr.length > 0){
+            thisStartTime = moment(newEventsArr[newEventsArr.length-1].end.dateTime);
+            thisEndTime = moment(newEventsArr[newEventsArr.length-1].end.dateTime);
+          }else{
+            thisStartTime = moment(event.start.dateTime).subtract(8, "hours");
+            thisEndTime = moment(event.start.dateTime).subtract(8, "hours");
+          }
+          thisEndTime.add(15, "minutes");
+          newEvent = {
+            subject : "Interview Appointment",
+            start: {
+              dateTime : thisStartTime.utc().format(),
+              timeZone : "UTC"
+            },
+            end : {
+              dateTime : thisEndTime.utc().format(),
+              timeZone : "UTC"
+            },
+            attendees : event.attendees
+          }
+          const testAdd = await client
+            .api("/me/events")
+            .post(newEvent);
+          newEventsArr.push(newEvent);
+        }
+        console.log(newEventsArr);
+        const testDelete = await client
+          .api(`/me/events/${event.id}`)
+          .delete((err, res) => {
+            if (err) {
+              console.log(err)
+              return;
+            }
+          })
+
+      }
     })
     // Dirty test code ends here
 
@@ -159,7 +153,8 @@ router.post('/calendar/interviewer/:interviewerId', async function(req, res, nex
     email: req.body.email,
     phoneNumber: req.body.phoneNumber,
     unixTimestamp: req.body.unixTimestamp,
-    date: date
+    date: date,
+    eventId: req.body.eventId
   })
 
   newCandidate
@@ -189,24 +184,33 @@ router.post('/calendar/interviewer/:interviewerId', async function(req, res, nex
     }
   });
 
-  // Find calendar event
+  // Find calendar event and save to calendar
+  let params = {}
   try {
-    // Get the first [numberOfEvents] events for the coming week
-    const result = await client
-      .api(`/me/calendarView?startDateTime=${start.toISOString()}&endDateTime=${end.toISOString()}`)
-      .filter(`contains(Subject, '${subject}')`)
-      .select('subject,start,end,attendees')
-      .orderby('start/dateTime ASC')
-      .get();
+    const update = {
+      "Subject": `Interview with ${req.body.fullName}`,
+      "Attendees": [
+        {
+          "EmailAddress": {
+            "Address": `${req.body.email}`,
+            "Name": `${req.body.fullName}`
+          },
+          "Type": "Required"
+        }
+      ]
+    }
 
-    res.json(params)
+    const result = await client
+      .api(`/me/events/${req.body.eventId}`)
+      .patch(update)
+
+    res.send(200)
   } catch (err) {
-    params.message = 'Error retrieving events';
+    params.message = 'Error updating event';
     params.error = { status: `${err.code}: ${err.message}` };
     params.debug = JSON.stringify(err.body, null, 2);
     res.json(params);
   }
-  // Save to calendar
-})
+});
 
 module.exports = router;
