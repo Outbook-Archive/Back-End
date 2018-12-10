@@ -112,6 +112,22 @@ function refreshTokens() {
 
 
 
+// Decode cookie into something stored in database and return corresponding id
+async function getIdFromToken(cookies) {
+  const user = jwt.decode(cookies.graph_id_token);
+  const Id = await Interviewer
+    .findOne({ username: user.name })
+    .then((interviewer) => {
+      return interviewer._id
+    })
+    .catch(err => {
+      console.log(err.message)
+    })
+  return Id
+}
+
+
+
 function saveValuesToCookie(token, res) { // consider having the cookies expire every 6 months
     // Parse the identity token
     const user = jwt.decode(token.token.id_token);
@@ -137,7 +153,7 @@ function saveValuesToCookie(token, res) { // consider having the cookies expire 
 // ********************************************
 
   // Save the access token in a cookie -> every 3 months to refresh
-  res.cookie('graph_access_token', token.token.access_token, {maxAge: 3600000, httpOnly: true});
+  res.cookie('graph_id_token', token.token.id_token, {maxAge: 3600000, httpOnly: true});
 }
 
 
@@ -151,6 +167,7 @@ module.exports = {
     getAuthUrl,
     getTokenFromCode,
     refreshTokens,
+    getIdFromToken,
     getAccessToken,
     clearCookies
 }

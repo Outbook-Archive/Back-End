@@ -1,7 +1,7 @@
 // Copyright (c) Microsoft. All rights reserved. Licensed under the MIT license. See LICENSE.txt in the project root for license information.
 const express = require('express');
 const router = express.Router();
-const { getTokenFromCode, clearCookies } = require('../helpers/auth');
+const { getTokenFromCode, clearCookies, getIdFromToken } = require('../helpers/auth');
 
 // Get authroize route
 // Handles returned authentication code from Microsoft's OAuth2 login
@@ -23,6 +23,17 @@ router.get('/authorize', async function(req, res, next) {
   } catch (error) {
     res.json({ title: 'Error', message: 'Error exchanging code for token', error: error });
   }
+});
+
+
+
+// Get interviewer calendar URL
+router.get('/authorize/calendar', async function(req, res) {
+  const id = await getIdFromToken(req.cookies)
+
+  const url = `/calendar/interviewer/${id}`
+
+  res.json({ calendarUrl: url });
 });
 
 
