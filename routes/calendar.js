@@ -156,6 +156,7 @@ router.post('/calendar/interviewer/:interviewerId', async function(req, res, nex
     date: date,
     eventId: req.body.eventId
   })
+  console.log(newCandidate);
 
   newCandidate
     .save()
