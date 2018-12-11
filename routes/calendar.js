@@ -204,12 +204,14 @@ router.post('/calendar/interviewer/:interviewerId', async function(req, res, nex
       .api(`/me/events/${req.body.eventId}`)
       .patch(update)
 
-    res.status(200).send('<script>window.close();</script>')
+    // res.status(200).send('<script>window.close();</script>')
+    res.redirect('/success')
   } catch (err) {
     params.message = 'Error updating event';
     params.error = { status: `${err.code}: ${err.message}` };
     params.debug = JSON.stringify(err.body, null, 2);
-    res.json(params);
+    // res.json(params);
+    res.redirect('/failure')
   }
 });
 
