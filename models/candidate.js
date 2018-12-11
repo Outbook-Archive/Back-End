@@ -16,12 +16,7 @@ const candidateSchema = new Schema({
     type: Number,
     required: true
   },
-  unixTimestamp: {
-    type: Number,
-    required: true,
-    unique: true
-  },
-  date: {
+  startDateTime: {
     type: Date,
     required: true
   },

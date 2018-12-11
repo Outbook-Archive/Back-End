@@ -147,13 +147,11 @@ router.get('/calendar/interviewer/:interviewerId', async function(req, res, next
 
 router.post('/calendar/interviewer/:interviewerId', async function(req, res, next) {
   // Create new user
-  const date = new Date(req.body.unixTimestamp * 1000);
   const newCandidate = new Candidate({
     fullName: req.body.fullName,
     email: req.body.email,
     phoneNumber: req.body.phoneNumber,
-    unixTimestamp: req.body.unixTimestamp,
-    date: date,
+    startDateTime: req.body.startDateTime,
     eventId: req.body.eventId
   })
   console.log(newCandidate);
