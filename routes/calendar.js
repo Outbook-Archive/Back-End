@@ -204,7 +204,7 @@ router.post('/calendar/interviewer/:interviewerId', async function(req, res, nex
       .api(`/me/events/${req.body.eventId}`)
       .patch(update)
 
-    res.send(200)
+    res.send(200).send('<script>window.close();</script>')
   } catch (err) {
     params.message = 'Error updating event';
     params.error = { status: `${err.code}: ${err.message}` };
