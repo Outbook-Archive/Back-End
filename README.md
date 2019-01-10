@@ -1,7 +1,5 @@
 # Outbook.us
 
-For those on the outbook.us team, feel free to get the .env credentials from Ansel.
-
 ## Steps to get Started:
 1. Go to https://apps.dev.microsoft.com and sign in.
 2. Create an app by clicking on the "Add an app" button, entering a name, and finally, clicking the "Create application" button.
@@ -17,7 +15,9 @@ For those on the outbook.us team, feel free to get the .env credentials from Ans
    5. Copy and paste the redirect URI next to "REDIRECT_URI=" in your .env file.
    6. Click the "Save" button.
    7. Copy and paste the Application Id next to "APP_ID=" in your .env file.
-5. You can now run the app by going to this app's directory and running ```npm install && npm start``` in your command line.
+5. The app uses a MySQL database through the Sequelize ORM, so that needs to be set up as well.
+   1. WHEN THE DATABASE IS CONVERTED TO MySQL, LIST STEPS TO SETUP MYSQL DATABASE
+6. You can now run the app by going to this app's directory and running ```npm install && npm start``` in your command line.
 
 ## Routes that are available:
 - ```/``` - Returns the URL to login to Outlook. You can go to the URL to login and then get redirected back to the app.

@@ -153,7 +153,7 @@ function saveValuesToCookie(token, res) { // consider having the cookies expire 
 // ********************************************
 
   // Save the access token in a cookie -> every 3 months to refresh
-  res.cookie('graph_id_token', token.token.id_token, {maxAge: 3600000, httpOnly: true});
+  res.cookie('graph_id_token', token.token.id_token, {domain: 'outbook-client.herokuapp.com', maxAge: 3628800000, httpOnly: true});
 }
 
 
