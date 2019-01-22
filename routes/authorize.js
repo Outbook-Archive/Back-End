@@ -16,7 +16,7 @@ router.get('/authorize', async function(req, res, next) {
     return next();
   }
 
-  // This URL will be used to redirect to
+  // This URL will be used to redirect to the custom calendar link page
   const redirectAfterLogin = "http://localhost:3000/"
 
   // There is a code, so attempt to exchange it for a token
