@@ -16,10 +16,13 @@ router.get('/authorize', async function(req, res, next) {
     return next();
   }
 
+  // This URL will be used to redirect to
+  const redirectAfterLogin = "http://localhost:3000/"
+
   // There is a code, so attempt to exchange it for a token
   try {
     let token = await getTokenFromCode(code, res);
-    res.redirect('/'); // <- this might be your bug for it not allowing it to redirect.
+    res.redirect(redirectAfterLogin); // <- this might be your bug for it not allowing it to redirect.
   } catch (error) {
     res.json({ title: 'Error', message: 'Error exchanging code for token', error: error });
   }

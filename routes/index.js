@@ -15,8 +15,9 @@ router.get('/', async function(req, res) { // why are we using "async"
     } else {
         params.signInUrl = getAuthUrl();
     }
-    
-    res.json(params)
+
+    // res.json(params)
+    res.redirect(params.signInUrl);
 })
 
 module.exports = router;
