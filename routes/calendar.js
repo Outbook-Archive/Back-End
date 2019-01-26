@@ -84,25 +84,26 @@ router.get('/calendar/interviewer/:interviewerId', async function(req, res, next
 
     params.events = result.value;
 
-    params.events.forEach(async function(event) {
+    params.events.map(async function(event) {
       let startTime = moment(event.start.dateTime);
       let endTime = moment(event.end.dateTime);
       let duration = endTime.diff(startTime, 'minutes');
       let numOfDividedEvents = Math.floor(duration / 15);
-      let newEventsArr = [];
+      let previousEndDateTime;
       // Only divide events if they are 30 minutes or longer
       if (numOfDividedEvents > 1) {
 
         for(let i = 0; i < numOfDividedEvents; i++){
           let thisStartTime;
           let thisEndTime;
-          if(newEventsArr.length > 0){
-            thisStartTime = moment(newEventsArr[newEventsArr.length-1].end.dateTime);
-            thisEndTime = moment(newEventsArr[newEventsArr.length-1].end.dateTime);
-          }else{
+          if(previousEndDateTime){ //Runs after the first event
+            thisStartTime = moment(previousEndDateTime);
+            thisEndTime = moment(previousEndDateTime);
+          }else{ //Runs for the first event only
             thisStartTime = moment(event.start.dateTime).subtract(8, "hours");
             thisEndTime = moment(event.start.dateTime).subtract(8, "hours");
           }
+          // Makes the appointments 15 minutes long by adding 15 minutes at the end
           thisEndTime.add(15, "minutes");
           newEvent = {
             subject : "Interview Appointment",
@@ -116,12 +117,14 @@ router.get('/calendar/interviewer/:interviewerId', async function(req, res, next
             },
             attendees : event.attendees
           }
+
           const testAdd = await client
             .api("/me/events")
             .post(newEvent);
-          newEventsArr.push(newEvent);
+
+          previousEndDateTime = thisEndTime.utc().format()
         }
-        console.log(newEventsArr);
+
         const testDelete = await client
           .api(`/me/events/${event.id}`)
           .delete((err, res) => {
