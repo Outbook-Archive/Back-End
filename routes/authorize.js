@@ -1,5 +1,6 @@
 // Copyright (c) Microsoft. All rights reserved. Licensed under the MIT license. See LICENSE.txt in the project root for license information.
 const express = require('express');
+const jwt = require('jsonwebtoken');
 const router = express.Router();
 const { getTokenFromCode, clearCookies, getIdFromToken } = require('../helpers/auth');
 
@@ -30,10 +31,12 @@ router.get('/authorize', async function(req, res, next) {
 // Get interviewer calendar URL
 router.get('/authorize/calendar', async function(req, res) {
   const id = await getIdFromToken(req.cookies)
+  const url = `${process.env.CROSS_ORIGIN}/calendar/interviewer/${id}`
 
-  const url = `/calendar/interviewer/${id}`
+  const user = jwt.decode(req.cookies.graph_id_token)
+  const name = user.name
 
-  res.json({ calendarUrl: url });
+  res.json({ calendarUrl: url, interviewerName: name });
 });
 
 
