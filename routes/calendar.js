@@ -150,13 +150,11 @@ router.get('/calendar/interviewer/:interviewerId', async function(req, res, next
 
 router.post('/calendar/interviewer/:interviewerId', async function(req, res, next) {
   // Create new user
-  const date = new Date(req.body.unixTimestamp * 1000);
   const newCandidate = new Candidate({
     fullName: req.body.fullName,
     email: req.body.email,
     phoneNumber: req.body.phoneNumber,
-    unixTimestamp: req.body.unixTimestamp,
-    date: date,
+    startDateTime: req.body.startDateTime,
     eventId: req.body.eventId
   })
   console.log(newCandidate);
@@ -209,12 +207,14 @@ router.post('/calendar/interviewer/:interviewerId', async function(req, res, nex
       .api(`/me/events/${req.body.eventId}`)
       .patch(update)
 
-    res.send(200)
+    // res.status(200).send('<script>window.close();</script>')
+    res.redirect('https://outbook-client-app.herokuapp.com/success')
   } catch (err) {
     params.message = 'Error updating event';
     params.error = { status: `${err.code}: ${err.message}` };
     params.debug = JSON.stringify(err.body, null, 2);
-    res.json(params);
+    // res.json(params);
+    res.redirect('https://outbook-client-app.herokuapp.com/failure')
   }
 });
 
