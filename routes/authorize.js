@@ -34,7 +34,7 @@ router.get('/authorize', async function(req, res, next) {
 // Get interviewer calendar URL
 router.get('/authorize/calendar', async function(req, res) {
   const id = await getIdFromToken(req.cookies)
-  const url = `${process.env.CROSS_ORIGIN}/calendar/interviewer/${id}`
+  const url = `${process.env.CROSS_ORIGIN}/dashboard/${id}`
 
   const user = jwt.decode(req.cookies.graph_id_token)
   const name = user.name
