@@ -25,7 +25,7 @@ async function divideEvents(interviewerId) {
   // How many days into the future from [startDaysIntoFuture] you can see calendar events
   const endDaysIntoFuture = 21
   // Number of calendar events to return
-  const numberOfEvents = 10
+  const numberOfEvents = 100
   // Query specific subjects
   const subject =  "Appointment"
 

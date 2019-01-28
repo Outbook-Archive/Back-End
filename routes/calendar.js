@@ -41,7 +41,7 @@ router.get('/calendar/interviewer/:interviewerId', async function(req, res, next
   // How many days into the future from [startDaysIntoFuture] you can see calendar events
   const endDaysIntoFuture = 21
   // Number of calendar events to return
-  const numberOfEvents = 10
+  const numberOfEvents = 100
   // Query specific subjects
   const subject =  "Appointment"
 
@@ -57,6 +57,7 @@ router.get('/calendar/interviewer/:interviewerId', async function(req, res, next
     // Get the first [numberOfEvents] events for the coming week
     const result = await client
       .api(`/me/calendarView?startDateTime=${start.toISOString()}&endDateTime=${end.toISOString()}`)
+      .header("Prefer", 'outlook.timezone="Pacific Standard Time"')
       .filter(`contains(Subject, '${subject}')`)
       .top(numberOfEvents)
       .select('subject,start,end,attendees')
