@@ -3,6 +3,7 @@ const express = require('express');
 const jwt = require('jsonwebtoken');
 const router = express.Router();
 const { getTokenFromCode, clearCookies, getIdFromToken } = require('../helpers/auth');
+const { divideEvents } = require('../helpers/cal');
 
 // Get authroize route
 // Handles returned authentication code from Microsoft's OAuth2 login
@@ -35,6 +36,9 @@ router.get('/authorize/calendar', async function(req, res) {
 
   const user = jwt.decode(req.cookies.graph_id_token)
   const name = user.name
+
+  // Divide the events before the link is shared
+  divideEvents(id)
 
   res.json({ calendarUrl: url, interviewerName: name });
 });
