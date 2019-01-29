@@ -3,6 +3,7 @@ const express = require('express');
 const jwt = require('jsonwebtoken');
 const router = express.Router();
 const { getTokenFromCode, clearCookies, getIdFromToken } = require('../helpers/auth');
+const { divideEvents } = require('../helpers/cal');
 
 // Get authroize route
 // Handles returned authentication code from Microsoft's OAuth2 login
@@ -17,13 +18,10 @@ router.get('/authorize', async function(req, res, next) {
     return next();
   }
 
-  // This URL will be used to redirect to the custom calendar link page
-  const redirectAfterLogin = "http://localhost:3000/"
-
   // There is a code, so attempt to exchange it for a token
   try {
     let token = await getTokenFromCode(code, res);
-    res.redirect(redirectAfterLogin); // <- this might be your bug for it not allowing it to redirect.
+    res.redirect(`${process.env.CROSS_ORIGIN}/candidateLink`);
   } catch (error) {
     res.json({ title: 'Error', message: 'Error exchanging code for token', error: error });
   }
@@ -34,10 +32,13 @@ router.get('/authorize', async function(req, res, next) {
 // Get interviewer calendar URL
 router.get('/authorize/calendar', async function(req, res) {
   const id = await getIdFromToken(req.cookies)
-  const url = `${process.env.CROSS_ORIGIN}/calendar/interviewer/${id}`
+  const url = `${process.env.CROSS_ORIGIN}/dashboard/${id}`
 
   const user = jwt.decode(req.cookies.graph_id_token)
   const name = user.name
+
+  // Divide the events before the link is shared
+  divideEvents(id)
 
   res.json({ calendarUrl: url, interviewerName: name });
 });

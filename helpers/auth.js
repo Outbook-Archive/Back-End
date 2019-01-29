@@ -24,9 +24,6 @@ function getAuthUrl() {
   return returnVal;
 }
 
-
-// *********** Change for the DB *********** //
-
 // Using the autorization code from OAuth2 login,
 // generate a token using OAuth2 library
 async function getTokenFromCode(auth_code, res) {
@@ -38,12 +35,10 @@ async function getTokenFromCode(auth_code, res) {
 
   const token = oauth2.accessToken.create(result);
 
-
   saveValuesToCookie(token, res);
 
   return token.token;
 }
-
 
 
 
@@ -129,45 +124,43 @@ async function getIdFromToken(cookies) {
 
 
 function saveValuesToCookie(token, res) { // consider having the cookies expire every 6 months
-    // Parse the identity token
-    const user = jwt.decode(token.token.id_token);
-// ********************************************
-// Saving the tokens we need into our database: will switch later to MySQL
-    const newInterviewer = new Interviewer({
-        username: user.name,
-        email: user.preferred_username,
-        tokens: [{
-            access_token: token.token.access_token,
-            refresh_token: token.token.refresh_token,
-            id_token: token.token.id_token
-        }],
-        expires: token.token.expires_at.getTime()
-    })
+  // Parse the identity token
+  const user = jwt.decode(token.token.id_token);
+  // ********************************************
+  // Saving the tokens we need into our database: will switch later to MySQL
+  const newInterviewer = new Interviewer({
+    username: user.name,
+    email: user.preferred_username,
+    tokens: [{
+      access_token: token.token.access_token,
+      refresh_token: token.token.refresh_token,
+      id_token: token.token.id_token
+    }],
+    expires: token.token.expires_at.getTime()
+  })
 
-    newInterviewer.save().then((_user) => {
-        console.log('Successfully saved this user:', _user);
-
-    })
-    .catch(err => res.status(400).send({ message: err.message }))
-
-// ********************************************
+  newInterviewer.save().then((_user) => {
+    console.log('Successfully saved this user:', _user);
+  })
+  .catch(err => res.status(400).send({ message: err.message }))
+  // ********************************************
 
   // Save the access token in a cookie -> every 3 months to refresh
   res.cookie('graph_id_token', token.token.id_token, { maxAge: 3628800000, httpOnly: true });
 }
 
 
+
 // Logout
 function clearCookies(res) {
-  res.clearCookie('graph_access_token', {maxAge: 3600000, httpOnly: true});
+  res.clearCookie('graph_id_token', { maxAge: 3600000, httpOnly: true });
 }
 
-
 module.exports = {
-    getAuthUrl,
-    getTokenFromCode,
-    refreshTokens,
-    getIdFromToken,
-    getAccessToken,
-    clearCookies
+  getAuthUrl,
+  getTokenFromCode,
+  refreshTokens,
+  getIdFromToken,
+  getAccessToken,
+  clearCookies
 }
