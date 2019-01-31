@@ -20,10 +20,11 @@
 6. You can now run the app by going to this app's directory and running ```npm install && npm start``` in your command line.
 
 ## Routes that are available:
-- ```/``` - Returns the URL to login to Outlook. You can go to the URL to login and then get redirected back to the app.
-- ```/authorize/signout``` - Removes all the cookies associated with the signed in account.
-- ```/calendar``` - Returns the upcoming calendar events. You can change how many events (```numberOfEvents```) and how many days to look ahead for events (```daysIntoFuture```) in ```routes/calendar.js```
-- ```/authorize/calendar``` - Uses a cookie stored on
+- GET ```/``` - Returns the URL to login to Outlook. You can go to the URL to login and then get redirected back to the app.
+- GET ```/authorize/signout``` - Removes all the cookies associated with the signed in account.
+- GET ```/authorize/calendar``` - Uses a cookie stored on the client to identify a user and give them the correct calendar URL
+- GET ```/calendar/interviewer/:interviewerId``` - Returns the upcoming calendar events. You can change how many events (```numberOfEvents```) and how many days to look ahead for events (```daysIntoFuture```) in ```routes/calendar.js```
+- POST ```/calendar/interviewer/:interviewerId``` - Expects
 
 ## Things to note:
 - The app uses a cron job that runs every hour to refresh the tokens
