@@ -5,15 +5,14 @@
   "main": "server.js",
   "scripts": {
     "start": "node server.js",
-    "test": "mocha test/*_test.js",
-    "test-watch": "nodemon --exec 'npm test'"
+    "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/SF-Gov/Back-End.git"
   },
   "keywords": [],
-  "author": "Jayce Azua && Ansel Bridgewater",
+  "author": "",
   "license": "ISC",
   "bugs": {
     "url": "https://github.com/SF-Gov/Back-End/issues"
@@ -30,10 +29,5 @@
     "mysql": "^2.16.0",
     "node-cron": "^2.0.3",
     "simple-oauth2": "^2.2.1"
-  },
-  "devDependencies": {
-    "chai": "^4.2.0",
-    "chai-http": "^4.2.0",
-    "mocha": "^5.2.0"
   }
 }

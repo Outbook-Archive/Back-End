@@ -16,11 +16,8 @@ router.get('/calendar/interviewer/:interviewerId', async function(req, res, next
     res.status(400).json({ message: err.message })
   });
 
-  // console.log(interviewer)
   const accessToken = interviewer.tokens[0].access_token;
   const userName = interviewer.username;
-  // const accessToken = await getAccessToken(req.cookies, res);
-
 
   // If accessToken and/or userName is not avaiable, redirect to home
   if (!(accessToken && userName)) {
@@ -135,13 +132,13 @@ router.post('/calendar/interviewer/:interviewerId', async function(req, res, nex
       .patch(update)
 
     // res.status(200).send('<script>window.close();</script>')
-    res.redirect('https://outbook-client-app.herokuapp.com/success')
+    res.redirect(`${process.env.CROSS_ORIGIN}/success`)
   } catch (err) {
     params.message = 'Error updating event';
     params.error = { status: `${err.code}: ${err.message}` };
     params.debug = JSON.stringify(err.body, null, 2);
     // res.json(params);
-    res.redirect('https://outbook-client-app.herokuapp.com/failure')
+    res.redirect(`${process.env.CROSS_ORIGIN}/failure`)
   }
 });
 

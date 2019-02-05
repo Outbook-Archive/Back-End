@@ -1,9 +1,9 @@
-require('dotenv').config();
 const express = require('express');
 const cookieParser = require('cookie-parser');
 const cron = require('node-cron');
+require('dotenv').config();
 const app = express();
-const port = process.env.PORT || 3000;
+const port = process.env.PORT;
 
 // dbConnection
 require('./dbConnection/mongo');
@@ -27,6 +27,7 @@ app.use((req, res, next) => {
 const index = require('./routes/index');
 const authorize = require('./routes/authorize');
 const calendar = require('./routes/calendar');
+
 // Tell app to use the routes
 app.use(index);
 app.use(authorize);
@@ -42,6 +43,3 @@ cron.schedule('0 * * * *', () => {
 app.listen(port, () => {
     console.log(`Listening on server port: ${port}`);
 });
-
-// This is for testing purposes
-module.exports = { app };

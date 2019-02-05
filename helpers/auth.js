@@ -57,6 +57,7 @@ async function getAccessToken(cookies, res) {
       return token;
     }
   }
+
   // Either no token or it's expired, do we have a refresh token?
   const refresh_token = cookies.graph_refresh_token;
   if (refresh_token) {
@@ -123,7 +124,7 @@ async function getIdFromToken(cookies) {
 
 
 
-function saveValuesToCookie(token, res) { // consider having the cookies expire every 6 months
+function saveValuesToCookie(token, res) {
   // Parse the identity token
   const user = jwt.decode(token.token.id_token);
   // ********************************************

@@ -5,7 +5,6 @@ const router = express.Router();
 const { getTokenFromCode, clearCookies, getIdFromToken } = require('../helpers/auth');
 const { divideEvents } = require('../helpers/cal');
 
-// Get authroize route
 // Handles returned authentication code from Microsoft's OAuth2 login
 router.get('/authorize', async function(req, res, next) {
   // Get auth code
