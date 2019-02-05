@@ -1,4 +1,5 @@
-// Copyright (c) Microsoft. All rights reserved. Licensed under the MIT license. See LICENSE.txt in the project root for license information.
+const Interviewer = require('../models/interviewer');
+const jwt = require('jsonwebtoken');
 
 // Create object that holds credentials
 const credentials = {
@@ -12,17 +13,14 @@ const credentials = {
     tokenPath: 'common/oauth2/v2.0/token'
   }
 };
-// Use credentials to initizlize OAuth2 library
 const oauth2 = require('simple-oauth2').create(credentials);
-const jwt = require('jsonwebtoken');
 
 // Use REDIRECT_URI and APP_SCOPES to generate sign-in URL
 function getAuthUrl() {
   const returnVal = oauth2.authorizationCode.authorizeURL({
-    redirect_uri: process.env.REDIRECT_URI,
+    redirect_uri: process.env.REDIRECT_URI, // redirects to save the tokens into the DB
     scope: process.env.APP_SCOPES
   });
-  console.log(`Generated auth url: ${returnVal}`);
   return returnVal;
 }
 
@@ -36,19 +34,19 @@ async function getTokenFromCode(auth_code, res) {
   });
 
   const token = oauth2.accessToken.create(result);
-  console.log('Token created: ', token.token);
 
   saveValuesToCookie(token, res);
 
-  return token.token.access_token;
+  return token.token;
 }
+
+
 
 // Gets or refreshes token used for accessing calendar data
 // Returns nothing if there are no useful cookies
 async function getAccessToken(cookies, res) {
   // Do we have an access token cached?
   let token = cookies.graph_access_token;
-
   if (token) {
     // We have a token, but is it expired?
     // Expire 5 minutes early to account for clock differences
@@ -60,41 +58,110 @@ async function getAccessToken(cookies, res) {
     }
   }
 
-  // Either no token or it's expired, do we have a
-  // refresh token?
+  // Either no token or it's expired, do we have a refresh token?
   const refresh_token = cookies.graph_refresh_token;
   if (refresh_token) {
     const newToken = await oauth2.accessToken.create({refresh_token: refresh_token}).refresh();
     saveValuesToCookie(newToken, res);
     return newToken.token.access_token;
   }
-
   // Nothing in the cookies that helps, return empty
   return null;
 }
 
+
+
+// Function to refresh tokens
+function refreshTokens() {
+  // Get all interviewers and create object with new tokens
+  Interviewer
+    .find({})
+    .then((interviewers) => {
+      interviewers.forEach(async function(interviewer) {
+        const refresh_token = interviewer.tokens[0].refresh_token;
+        const newToken = await oauth2.accessToken.create({refresh_token: refresh_token}).refresh();
+        if (newToken) {
+          const update = {
+            tokens: [{
+              access_token: newToken.token.access_token,
+              refresh_token: newToken.token.refresh_token,
+              id_token: newToken.token.id_token
+            }],
+            expires: newToken.token.expires_at.getTime()
+          }
+          // Update the tokens in the database
+          Interviewer
+            .findByIdAndUpdate(interviewer._id, update)
+            .then((interviewer) => {
+              console.log(`Successfully updated interviewer: ${interviewer.username}`);
+            }).catch((err) => {
+              console.log(err.message)
+            })
+        } else {
+          console.log("refresh_token is not valid");
+        }
+      })
+    }).catch((err) => {
+      console.log(err.message)
+    })
+}
+
+
+
+// Decode cookie into something stored in database and return corresponding id
+async function getIdFromToken(cookies) {
+  const user = jwt.decode(cookies.graph_id_token);
+  const Id = await Interviewer
+    .findOne({ username: user.name })
+    .then((interviewer) => {
+      return interviewer._id
+    })
+    .catch(err => {
+      console.log(err.message)
+    })
+  return Id
+}
+
+
+
 function saveValuesToCookie(token, res) {
   // Parse the identity token
   const user = jwt.decode(token.token.id_token);
+  // ********************************************
+  // Saving the tokens we need into our database: will switch later to MySQL
+  const newInterviewer = new Interviewer({
+    username: user.name,
+    email: user.preferred_username,
+    tokens: [{
+      access_token: token.token.access_token,
+      refresh_token: token.token.refresh_token,
+      id_token: token.token.id_token
+    }],
+    expires: token.token.expires_at.getTime()
+  })
 
-  // Save the access token in a cookie
-  res.cookie('graph_access_token', token.token.access_token, {maxAge: 3600000, httpOnly: true});
-  // Save the user's name in a cookie
-  res.cookie('graph_user_name', user.name, {maxAge: 3600000, httpOnly: true});
-  // Save the refresh token in a cookie
-  res.cookie('graph_refresh_token', token.token.refresh_token, {maxAge: 7200000, httpOnly: true});
-  // Save the token expiration tiem in a cookie
-  res.cookie('graph_token_expires', token.token.expires_at.getTime(), {maxAge: 3600000, httpOnly: true});
+  newInterviewer.save().then((_user) => {
+    console.log('Successfully saved this user:', _user);
+  })
+  .catch(err => res.status(400).send({ message: err.message }))
+  // ********************************************
+
+  // Save the access token in a cookie -> every 3 months to refresh
+  res.cookie('graph_id_token', token.token.id_token, { maxAge: 3628800000, httpOnly: true });
 }
 
+
+
+// Logout
 function clearCookies(res) {
-  res.clearCookie('graph_access_token', {maxAge: 3600000, httpOnly: true});
-  res.clearCookie('graph_user_name', {maxAge: 3600000, httpOnly: true});
-  res.clearCookie('graph_refresh_token', {maxAge: 7200000, httpOnly: true});
-  res.clearCookie('graph_token_expires', {maxAge: 3600000, httpOnly: true});
+  res.clearCookie('graph_id_token', { maxAge: 3600000, httpOnly: true });
 }
 
-exports.getAuthUrl = getAuthUrl;
-exports.getTokenFromCode = getTokenFromCode;
-exports.getAccessToken = getAccessToken;
-exports.clearCookies = clearCookies;
+module.exports = {
+  getAuthUrl,
+  getTokenFromCode,
+  refreshTokens,
+  getIdFromToken,
+  getAccessToken,
+  clearCookies
+}
