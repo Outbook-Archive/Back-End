@@ -73,11 +73,14 @@ router.get('/calendar/interviewer/:interviewerId', async function(req, res, next
 });
 
 router.post('/calendar/interviewer/:interviewerId', async function(req, res, next) {
+  // Remove any formatting from phone number before user is created
+  number = req.body.phoneNumber.replace(/\D/g,'');
+
   // Create new user
   const newCandidate = new Candidate({
     fullName: req.body.fullName,
     email: req.body.email,
-    phoneNumber: req.body.phoneNumber,
+    phoneNumber: number,
     startDateTime: req.body.startDateTime,
     eventId: req.body.eventId
   })
