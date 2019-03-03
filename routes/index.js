@@ -1,5 +1,5 @@
 const router = require('express').Router();
-const { getAuthUrl, getAccessToken } = require('../helpers/auth');
+const { getAuthUrl } = require('../helpers/auth');
 
 // Redirect to OAuth2 login
 router.get('/', async function(req, res) {
