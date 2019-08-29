@@ -1,6 +1,7 @@
+const moment = require('moment');
 const Interviewer = require('../models/interviewer');
 const graph = require('@microsoft/microsoft-graph-client');
-const moment = require('moment');
+
 
 async function divideEvents(interviewerId) {
   // Get the access token from the database
