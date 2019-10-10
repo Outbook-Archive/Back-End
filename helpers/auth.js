@@ -61,7 +61,7 @@ async function getAccessToken(cookies, res) {
   // Either no token or it's expired, do we have a refresh token?
   const refresh_token = cookies.graph_refresh_token;
   if (refresh_token) {
-    const newToken = await oauth2.accessToken.create({refresh_token: refresh_token}).refresh();
+    const newToken = await oauth2.accessToken.create({refresh_token}).refresh();
     saveValuesToCookie(newToken, res);
     return newToken.token.access_token;
   }
@@ -79,7 +79,7 @@ function refreshTokens() {
     .then((interviewers) => {
       interviewers.forEach(async function(interviewer) {
         const refresh_token = interviewer.tokens[0].refresh_token;
-        const newToken = await oauth2.accessToken.create({refresh_token: refresh_token}).refresh();
+        const newToken = await oauth2.accessToken.create({refresh_token}).refresh();
         if (newToken) {
           const update = {
             tokens: [{
