@@ -22,7 +22,7 @@ router.get('/authorize', async function(req, res, next) {
     let token = await getTokenFromCode(code, res);
     res.redirect(`${process.env.CROSS_ORIGIN}/candidateLink`);
   } catch (error) {
-    res.json({ title: 'Error', message: 'Error exchanging code for token', error: error });
+    res.json({ title: 'Error', message: 'Error exchanging code for token', error });
   }
 });
 
